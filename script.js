@@ -4,31 +4,31 @@ var currentWeatherContainer = document.getElementById('currentWeather');
 var fiveDayContainer = document.getElementById('fiveDay');
 
 function renderWeather() {
-  var city = cityInput.value;
-  fetchLatLon(city);
+var city = cityInput.value;
+fetchLatLon(city);
 }
 
 function fetchLatLon(cityName) {
-  fetch(
+fetch(
     "http://api.openweathermap.org/geo/1.0/direct?q=" +
-      cityName +
-      "&appid=328a2ebf7df119aa25eb22c91cf23a26"
-  )
+cityName +
+"&appid=328a2ebf7df119aa25eb22c91cf23a26"
+)
     .then((respone) => respone.json())
     .then((data) => {
-      oneCall(data[0].lat, data[0].lon, data[0].name)
+        oneCall(data[0].lat, data[0].lon, data[0].name)
     })
     .catch((err) => alert("Worng city name!"));
 }
 
 function oneCall(lat, lon, city) {
-  fetch(
+fetch(
     "https://api.openweathermap.org/data/2.5/onecall?lat=" +
-      lat +
-      "&lon=" +
-      lon +
-      "&exclude=minutely,hourly,alerts&units=imperial&appid=328a2ebf7df119aa25eb22c91cf23a26"
-  )
+    lat +
+    "&lon=" +
+    lon +
+    "&exclude=minutely,hourly,alerts&units=imperial&appid=328a2ebf7df119aa25eb22c91cf23a26"
+)
     .then((respone) => respone.json())
     .then((data) => {
         displayCurrentWeather(data.current, city)
@@ -94,7 +94,16 @@ card.append(weatherAttributes)
 }
 
 function fiveDay(daily){
-    console.log(daily)
-}
+console.log(daily)
+for (var i = 0; i < 5; i++){
+    var card = document.createElement('div')
+    var cardHeader = document.createElement('div')
+    var weatherAttributes = document.createElement('ul')
+    var li1 = document.createElement('li')
+    var li2 = document.createElement('li')
+    var li3 = document.createElement('li')
+    var li4 = document.createElement('li')
 
+}
+}
 search.addEventListener("click", renderWeather);
