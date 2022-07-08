@@ -32,7 +32,8 @@ fetch(
     .then((respone) => respone.json())
     .then((data) => {
         displayCurrentWeather(data.current, city)
-        fiveDay(data.daily)
+        fiveDay(data.daily, city)
+        console.log(data.daily)
     });
 }
 
@@ -93,9 +94,15 @@ card.append(weatherAttributes)
 
 }
 
-function fiveDay(daily){
-console.log(daily)
+function fiveDay(daily, city){
+console.log(daily, city)
 for (var i = 0; i < 5; i++){
+    var date = new Date();
+    var dd = String(date.getDate()).padStart(2, '0');
+    var mm = String(date.getMonth()+1).padStart(2, '0');
+    var yyyy = date.getFullYear();
+    date = mm + '/' + dd + '/'+ yyyy;
+
     var card = document.createElement('div')
     var cardHeader = document.createElement('div')
     var weatherAttributes = document.createElement('ul')
@@ -104,6 +111,30 @@ for (var i = 0; i < 5; i++){
     var li3 = document.createElement('li')
     var li4 = document.createElement('li')
 
+    card.setAttribute('class', 'card', 'col')
+    cardHeader.setAttribute('class', 'card-header', 'col')
+    cardHeader.textContent =  city + ' ' + date.toLocaleString('en-US')
+    card.append(cardHeader)
+    fiveDayContainer.append(card)
+
+    weatherAttributes.setAttribute('class', 'list-group', 'list-group-flush', 'text-left')
+    li1.setAttribute('class', 'list-group-item')
+    li2.setAttribute('class', 'list-group-item')
+    li3.setAttribute('class', 'list-group-item')
+    li4.setAttribute('class', 'list-group-item')
+
+    li1.textContent = 'temp: ' + daily[i].temp.day + ' deg F'
+    li2.textContent = 'wind: ' + daily[i].wind_speed + ' MPH'
+    li3.textContent = 'humidity: ' + daily[i].humidity + '%'
+    li4.textContent = 'UV index: ' + daily[i].uvi
+
+    weatherAttributes.append(li1)
+    weatherAttributes.append(li2)
+    weatherAttributes.append(li3)
+    weatherAttributes.append(li4)
+
+    card.append(weatherAttributes)
 }
+
 }
 search.addEventListener("click", renderWeather);
