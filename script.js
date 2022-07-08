@@ -9,16 +9,16 @@ var todayDate = moment();
 var cityNames = JSON.parse(localStorage.getItem('citySearches')) || [];
 
 
-//function 
+//function  that clears our display area and calls fetchLatLon
 function renderWeather() {
     historyContainer.innerHTML = ""
     currentWeatherContainer.innerHTML = ""
     fiveDayContainer.innerHTML = ""
     var city = cityInput.value;
     fetchLatLon(city);
-    storeSearch(city);
 }
 
+//uses geocoding api to get lat and lon of entered city
 function fetchLatLon(cityName) {
 fetch(
     "http://api.openweathermap.org/geo/1.0/direct?q=" +
@@ -32,6 +32,8 @@ cityName +
     .catch((err) => alert("Worng city name!"));
 }
 
+//uses one call api to return all of our weather data about the city
+//this function runs our display current weather, five day forecast, and stores our search history
 function oneCall(lat, lon, city) {
 fetch(
     "https://api.openweathermap.org/data/2.5/onecall?lat=" +
@@ -44,29 +46,43 @@ fetch(
     .then((data) => {
         displayCurrentWeather(data.current, city)
         fiveDay(data.daily, city)
+        storeSearch(city);
     });
 }
 
+//gathers data passed from previous function to create dynamic html each time a user searchs
 function displayCurrentWeather(current, city){
     console.log(current, city);
 
 // create variables for all temp elements.
 var card = document.createElement('div')
 var cardHeader = document.createElement('div')
+var weatherIcon = document.createElement('img')
 var weatherAttributes = document.createElement('ul')
 var li1 = document.createElement('li')
 var li2 = document.createElement('li')
 var li3 = document.createElement('li')
 var li4 = document.createElement('li')
 
+if (current.uvi <=4) {
+    li4.setAttribute('class', "p-3", "mb-2", "bg-success", "text-white")
+} else if (current.uvi <=8) {
+    li4.setAttribute('class', "p-3", "mb-2", "bg-warning", "text-dark")
+} else {
+    li4.setAttribute('class', "p-3", "mb-2", "bg-danger", "text-white")
+}
+
 // add attributes for styling to the newly created elements
 card.setAttribute('class', 'card')
 cardHeader.setAttribute('class', 'card-header')
+weatherIcon.setAttribute('src', 'http://openweathermap.org/img/wn/'+ current.weather[0].icon +'@2x.png')
 
 
 
 
 cardHeader.textContent =  city + ' ' + todayDate.format("MMM Do YY")
+
+cardHeader.append(weatherIcon)
 
 card.append(cardHeader)
 
@@ -77,6 +93,8 @@ li1.setAttribute('class', 'list-group-item')
 li2.setAttribute('class', 'list-group-item')
 li3.setAttribute('class', 'list-group-item')
 li4.setAttribute('class', 'list-group-item')
+
+
 
 li1.textContent = 'temp: ' + current.temp + ' deg F'
 li2.textContent = 'wind: ' + current.wind_speed + ' MPH'
@@ -89,9 +107,10 @@ weatherAttributes.append(li3)
 weatherAttributes.append(li4)
 
 card.append(weatherAttributes)
-
 }
 
+
+//takes in data from onecall function and creates dynamic html for our weather data
 function fiveDay(daily, city){
 console.log(daily, city)
 for (var i = 0; i < 5; i++){
@@ -100,6 +119,7 @@ for (var i = 0; i < 5; i++){
 
     var cardFive = document.createElement('div')
     var cardHeaderFive = document.createElement('div')
+    var weatherIconFive = document.createElement('img')
     var weatherAttributesFive = document.createElement('ul')
     var li1Five = document.createElement('li')
     var li2Five = document.createElement('li')
@@ -109,6 +129,9 @@ for (var i = 0; i < 5; i++){
     cardFive.setAttribute('class', 'card', 'col')
     cardHeaderFive.setAttribute('class', 'card-header', 'col')
     cardHeaderFive.textContent =  city + ' ' + dateFive
+    weatherIconFive.setAttribute('src', 'http://openweathermap.org/img/wn/'+ daily[i].weather[0].icon +'@2x.png')
+
+    cardHeaderFive.append(weatherIconFive)
     cardFive.append(cardHeaderFive)
     fiveDayContainer.append(cardFive)
 
@@ -133,6 +156,7 @@ for (var i = 0; i < 5; i++){
 
 }
 
+//stores each search to local storage
 function storeSearch(city) {
     console.log(city);
     cityNames.push(city)
@@ -140,26 +164,30 @@ function storeSearch(city) {
     displaySearchHistory(cityNames, city)
 }
 
+//displays the search history as a list
 function displaySearchHistory(history, city) {
     if (history.length > 10) {
+
+        var header = document.createElement('div')
+        header.textContent = "Search History"
+        historyContainer.append(header)
+        var cityList = document.createElement('ul')
+        cityList.setAttribute('class', 'list-group', 'list-group-flush', 'text-left')
+        historyContainer.append(cityList);
         for (var i = 0; i<10; i++) {
             cityInput.textContent = ""
-            var cityList = document.createElement('ul')
             var cityItem = document.createElement('li')
             var oldCityBtn = document.createElement('button')
-            cityList.setAttribute('class', 'list-group', 'list-group-flush', 'text-left')
             cityItem.setAttribute('class', 'list-group-item')
             oldCityBtn.setAttribute('id', "city-search")
             oldCityBtn.setAttribute('class', "btn")
             oldCityBtn.setAttribute('type', "button")
-            var historyItem = history[(history.length - i)]
-            oldCityBtn.textContent = historyItem
+            oldCityBtn.textContent = history[(history.length - i -1)]
             cityItem.append(oldCityBtn);
             cityList.append(cityItem)
-            historyContainer.append(cityList);
             oldCityBtn.addEventListener('click', function() {
-                var newCity = historyItem
-                cityInput.value = newCity
+                cityInput.value = oldCityBtn.textContent
+                console.log(cityInput.value)
                 renderWeather()
             })
         }
@@ -170,7 +198,10 @@ function displaySearchHistory(history, city) {
             var oldCityBtn = document.createElement('a')
             cityList.setAttribute('class', 'list-group', 'list-group-flush', 'text-left')
             cityItem.setAttribute('class', 'list-group-item')
-            cityItem.textContent = history[(history.length - i)]
+            oldCityBtn.setAttribute('id', "city-search")
+            oldCityBtn.setAttribute('class', "btn")
+            oldCityBtn.setAttribute('type', "button")
+            oldCityBtn.textContent = history[(history.length - i)]
             cityItem.append(oldCityBtn);
             cityList.append(cityItem);
             historyContainer.append(cityList);
