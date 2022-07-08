@@ -21,7 +21,7 @@ function renderWeather() {
 //uses geocoding api to get lat and lon of entered city
 function fetchLatLon(cityName) {
 fetch(
-    "http://api.openweathermap.org/geo/1.0/direct?q=" +
+    "https://api.openweathermap.org/geo/1.0/direct?q=" +
 cityName +
 "&appid=328a2ebf7df119aa25eb22c91cf23a26"
 )
@@ -75,7 +75,7 @@ if (current.uvi <=4) {
 // add attributes for styling to the newly created elements
 card.setAttribute('class', 'card')
 cardHeader.setAttribute('class', 'card-header')
-weatherIcon.setAttribute('src', 'http://openweathermap.org/img/wn/'+ current.weather[0].icon +'@2x.png')
+weatherIcon.setAttribute('src', 'https://openweathermap.org/img/wn/'+ current.weather[0].icon +'@2x.png')
 
 
 
@@ -129,7 +129,7 @@ for (var i = 0; i < 5; i++){
     cardFive.setAttribute('class', 'card', 'col')
     cardHeaderFive.setAttribute('class', 'card-header', 'col')
     cardHeaderFive.textContent =  city + ' ' + dateFive
-    weatherIconFive.setAttribute('src', 'http://openweathermap.org/img/wn/'+ daily[i].weather[0].icon +'@2x.png')
+    weatherIconFive.setAttribute('src', 'https://openweathermap.org/img/wn/'+ daily[i].weather[0].icon +'@2x.png')
 
     cardHeaderFive.append(weatherIconFive)
     cardFive.append(cardHeaderFive)
@@ -166,14 +166,14 @@ function storeSearch(city) {
 
 //displays the search history as a list
 function displaySearchHistory(history, city) {
+    var header = document.createElement('div')
+    header.textContent = "Search History"
+    historyContainer.append(header)
+    var cityList = document.createElement('ul')
+    cityList.setAttribute('class', 'list-group', 'list-group-flush', 'text-left')
+    historyContainer.append(cityList);
     if (history.length > 10) {
 
-        var header = document.createElement('div')
-        header.textContent = "Search History"
-        historyContainer.append(header)
-        var cityList = document.createElement('ul')
-        cityList.setAttribute('class', 'list-group', 'list-group-flush', 'text-left')
-        historyContainer.append(cityList);
         for (var i = 0; i<10; i++) {
             cityInput.textContent = ""
             var cityItem = document.createElement('li')
